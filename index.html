@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>OP - Task</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <style>
+        table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+            width: 100%;
+        }
+        table tbody {
+            display: table;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Сортировки массива чисел на разных алгоритмах</h1>
+    <form>
+        <div class="form-group">
+            <label for="numberEll">Задайте количество элементов в рандомном массиве чисел, по умолчанию 10</label>
+            <input type="number" class="form-control" id="numberEll" placeholder="Задайте количество элементов" value="10">
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" onclick="sort('bubble')">Сортировка пузырьком</button>
+            <button type="button" class="btn btn-primary" onclick="sort('selection')">Сортировка выбором</button>
+            <button type="button" class="btn btn-primary" onclick="sort('insertion')">Сортировка вставками</button>
+        </div>
+    </form>
+    <h3 id="method">Сортировка пузырьком</h3>
+    <div class="row">
+        <h5>Время: <span id="timer">0</span></h5>
+    </div>
+    <table class="table">
+        <tbody id="table"></tbody>
+    </table>
+</div>
+
+
+<div id="visual"></div>
+
+<script src="./js/bootstrap.bundle.js"></script>
+<script src="./js/bootstrap.js"></script>
+<script src="./js/bootstrap.esm.js"></script>
+<script>
+    const sort = (func) => {
+        const start= new Date().getTime();
+        const num = document.getElementById('numberEll').value || 10;
+        const arr = Array.from({length: num}, () => Math.floor(Math.random() * num));
+        if (func === 'bubble') {
+            document.getElementById('method').innerHTML = 'Сортировка пузырьком';
+            bubbleSort(arr)
+        } else if (func === 'selection') {
+            document.getElementById('method').innerHTML = 'Сортировка выбором';
+            selectionSort(arr)
+        } else {
+            document.getElementById('method').innerHTML = 'Сортировка вставками';
+            insertionSort(arr)
+        }
+        const end = new Date().getTime();
+        document.getElementById('timer').innerHTML = `${end - start}ms`
+    };
+
+    const visualTable = (arr, numberGreen = null, number = null) => {
+        let result = '';
+        arr.map((item, index) => {
+            if (number === index) {
+                result += `<td style="color: red; font-weight: bold">${item}</td>`;
+            } else if (numberGreen === index) {
+                result += `<td style="color: greenyellow; font-weight: bold">${item}</td>`;
+            } else {
+                result += `<td>${item}</td>`;
+            }
+        });
+        return result;
+    };
+
+    const bubbleSort = (arr) => {
+        document.getElementById('table').innerHTML = `<tr>${visualTable(arr)}</tr>`
+        for (let i = 0; i < arr.length; i++) {
+            let number, numberGreen;
+            for (let j = 0; j < arr.length - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    number = j;
+                    numberGreen = j + 1;
+                    let temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+            if (numberGreen && number) {
+                const visual = `<tr>${visualTable(arr, numberGreen, number)}</tr>`;
+                document.getElementById('table').innerHTML = document.getElementById('table').innerHTML + visual;
+            }
+        }
+        return arr;
+    };
+
+    const selectionSort = (arr) => {
+        document.getElementById('table').innerHTML = `<tr>${visualTable(arr)}</tr>`
+        for (let i = 0, l = arr.length, k = l - 1; i < k; i++) {
+            let indexMin = i;
+            for (let j = i + 1; j < l; j++) {
+                if (arr[indexMin] > arr[j]) {
+                    indexMin = j;
+                }
+            }
+            if (indexMin !== i) {
+                [arr[i], arr[indexMin]] = [arr[indexMin], arr[i]];
+            }
+            const visual = `<tr>${visualTable(arr, i, indexMin)}</tr>`;
+            document.getElementById('table').innerHTML = document.getElementById('table').innerHTML + visual;
+        }
+        return arr;
+    };
+
+    const insertionSort = arr => {
+        document.getElementById('table').innerHTML = `<tr>${visualTable(arr)}</tr>`
+        for (let i = 1, l = arr.length; i < l; i++) {
+            const current = arr[i];
+            let j = i;
+            while (j > 0 && arr[j - 1] > current) {
+                arr[j] = arr[j - 1];
+                j--;
+            }
+            arr[j] = current;
+            const visual = `<tr>${visualTable(arr, i, j)}</tr>`;
+            document.getElementById('table').innerHTML = document.getElementById('table').innerHTML + visual;
+        }
+        return arr;
+    };
+</script>
+</body>
+</html>
